@@ -341,4 +341,4 @@ These are issues in the current version:
 
 ## License
 
-No license has been specified for this project. Add a `LICENSE` file if you want to allow reuse.
+Released under the [MIT License](LICENSE). You are free to use, modify and distribute the code, including for your own school's events. The license covers the source code only; real event data (student names, classes, results) is not included and must not be published without proper authorization. The CSVs in `sample_csvs/` are randomly generated demo data.
