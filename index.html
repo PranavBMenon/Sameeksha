@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Sameeksha 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF6EC;
+    --paper-2:#F2EBDC;
+    --ink:#12222B;
+    --ink-soft:#425461;
+    --teal:#0E7C86;
+    --teal-deep:#0A5B63;
+    --ganga:#E8952B;
+    --ganga-soft:#FBE3BE;
+    --yamuna:#2B6CB0;
+    --yamuna-soft:#CFE0F5;
+    --kaveri:#1E8A5F;
+    --kaveri-soft:#CDEBDD;
+    --krishna:#C23B3B;
+    --krishna-soft:#F5D3D3;
+    --line:#E4D9C2;
+    --shadow: 0 10px 30px -12px rgba(18,34,43,0.18);
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+  html{ -webkit-text-size-adjust:100%; }
+
+  body{
+    font-family:'Inter',sans-serif;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(232,149,43,0.08), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(43,108,176,0.08), transparent 40%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    background-attachment:fixed;
+  }
+
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    opacity:0.35;
+    background-image:radial-gradient(rgba(18,34,43,0.06) 1px, transparent 1px);
+    background-size:3px 3px;
+    z-index:0;
+  }
+
+  .container{
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+    position:relative;
+    z-index:1;
+  }
+
+  /* ===== HEADER ===== */
+  .header{
+    text-align:center;
+    padding:48px 30px 40px;
+    border-radius:22px;
+    background:linear-gradient(160deg, #16303B 0%, #0E2229 100%);
+    color:var(--paper);
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    margin-bottom:26px;
+  }
+  .header::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:64px;
+    background:
+      repeating-linear-gradient(-8deg, rgba(232,149,43,0.35) 0 3px, transparent 3px 46px),
+      repeating-linear-gradient(6deg, rgba(43,108,176,0.35) 0 3px, transparent 3px 52px),
+      repeating-linear-gradient(-4deg, rgba(30,138,95,0.3) 0 3px, transparent 3px 40px),
+      repeating-linear-gradient(9deg, rgba(194,59,59,0.3) 0 3px, transparent 3px 58px);
+    opacity:0.7;
+    mask-image: linear-gradient(to bottom, transparent, black 60%);
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:#F0C888;
+    margin-bottom:14px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .header h1{
+    font-family:'Fraunces',serif;
+    font-optical-sizing:auto;
+    font-weight:680;
+    font-size:clamp(2.4rem, 6vw, 4.2rem);
+    letter-spacing:-0.01em;
+    line-height:1;
+    margin-bottom:14px;
+  }
+  .header .tagline{
+    font-size:1.05rem;
+    color:#C8D6DA;
+    font-weight:500;
+    position:relative;
+    z-index:2;
+  }
+  .status-row{
+    margin-top:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+    position:relative;
+    z-index:2;
+  }
+  .live-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 14px 7px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:0.05em;
+    color:#EAF3F0;
+  }
+  .live-dot{
+    width:9px;height:9px;border-radius:50%;
+    background:#3EE6A0;
+    box-shadow:0 0 0 0 rgba(62,230,160,0.6);
+    animation:pulse 1.8s infinite;
+    flex-shrink:0;
+  }
+  .live-dot.loading{ background:#F0C888; box-shadow:0 0 0 0 rgba(240,200,136,0.6);}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(62,230,160,0.55);}
+    70%{box-shadow:0 0 0 9px rgba(62,230,160,0);}
+    100%{box-shadow:0 0 0 0 rgba(62,230,160,0);}
+  }
+  .last-updated{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+    color:#9FB2B8;
+  }
+  .refresh-btn{
+    background:#F0C888;
+    color:#16303B;
+    border:none;
+    padding:9px 18px;
+    border-radius:999px;
+    font-weight:800;
+    font-size:0.82rem;
+    cursor:pointer;
+    letter-spacing:0.02em;
+    transition:transform .15s ease, box-shadow .15s ease;
+    min-height:40px;
+  }
+  .refresh-btn:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(240,200,136,0.4); }
+  .refresh-btn:active{ transform:translateY(0); }
+  .refresh-btn:focus-visible, button:focus-visible, select:focus-visible{
+    outline:3px solid var(--teal); outline-offset:2px;
+  }
+
+  /* ===== TOP NAV (desktop) ===== */
+  .nav-tabs{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-bottom:26px;
+    background:#fff;
+    border-radius:16px;
+    padding:8px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .nav-tab{
+    padding:11px 22px;
+    background:transparent;
+    border:none;
+    border-radius:11px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:0.92rem;
+    font-family:'Inter',sans-serif;
+    color:var(--ink-soft);
+    transition:all .18s ease;
+    min-height:44px;
+  }
+  .nav-tab:hover{ background:var(--paper-2); color:var(--ink); }
+  .nav-tab.active{
+    background:var(--ink);
+    color:var(--paper);
+    box-shadow:0 4px 14px rgba(18,34,43,0.25);
+  }
+
+  .tab-content{display:none;}
+  .tab-content.active{display:block; animation:rise .35s ease;}
+  @keyframes rise{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .card{
+    background:#fff;
+    border-radius:18px;
+    padding:30px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--line);
+  }
+  .card-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+    margin-bottom:24px;
+  }
+  .card h2{
+    font-family:'Fraunces',serif;
+    font-weight:640;
+    color:var(--ink);
+    font-size:1.7rem;
+    margin-bottom:6px;
+  }
+  .card .sub{
+    color:var(--ink-soft);
+    font-size:0.92rem;
+  }
+  .card-head .sub{ margin-bottom:0; }
+
+  /* ===== LEADERBOARD ===== */
+  .leaderboard{ display:grid; gap:16px; }
+  .river-row{
+    position:relative;
+    border-radius:14px;
+    overflow:hidden;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    padding:18px 22px;
+  }
+  .river-row.leading{
+    border-color:transparent;
+    box-shadow:0 0 0 2px rgba(240,200,136,0.9), var(--shadow);
+  }
+  .river-fill{
+    position:absolute;
+    top:0; bottom:0; left:0;
+    border-radius:14px 6px 6px 14px;
+    transition:width 1.1s cubic-bezier(.22,.9,.3,1);
+    z-index:0;
+  }
+  .river-fill::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.35) 45%, transparent 55%);
+    background-size:220% 100%;
+    animation:shimmer 3.4s linear infinite;
+  }
+  @keyframes shimmer{
+    0%{ background-position:220% 0; }
+    100%{ background-position:-20% 0; }
+  }
+  .river-row.ganga .river-fill{ background:linear-gradient(90deg,#F3A93F,var(--ganga)); }
+  .river-row.yamuna .river-fill{ background:linear-gradient(90deg,#4C87C6,var(--yamuna)); }
+  .river-row.kaveri .river-fill{ background:linear-gradient(90deg,#37A578,var(--kaveri)); }
+  .river-row.krishna .river-fill{ background:linear-gradient(90deg,#D65D5D,var(--krishna)); }
+
+  .river-content{
+    position:relative; z-index:1;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:14px;
+  }
+  .river-name{
+    display:flex; align-items:center; gap:12px;
+    font-weight:800; font-size:1.18rem;
+    color:var(--ink);
+  }
+  .rank-badge{
+    width:30px;height:30px;border-radius:50%;
+    background:#fff;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:800; font-size:0.9rem;
+    box-shadow:inset 0 0 0 2px var(--line);
+    flex-shrink:0;
+  }
+  .river-row.leading .rank-badge{
+    background:#F0C888; box-shadow:none; color:#16303B;
+  }
+  .crown{ font-size:1.15rem; margin-left:2px; filter:drop-shadow(0 2px 3px rgba(0,0,0,0.15)); }
+  .river-points{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:800;
+    font-size:1.35rem;
+    color:var(--ink);
+    background:rgba(255,255,255,0.75);
+    padding:6px 14px;
+    border-radius:999px;
+    flex-shrink:0;
+  }
+
+  .leader-strip{
+    margin-top:22px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+    gap:12px;
+  }
+  .leader-chip{
+    border-radius:12px;
+    padding:14px 16px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    min-width:0;
+    overflow:hidden;
+  }
+  .leader-chip .cat{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .leader-chip .who{
+    font-weight:800; font-size:1.02rem;
+    display:flex; align-items:center; gap:6px;
+    flex-wrap:wrap;
+    min-width:0;
+  }
+  .leader-chip .who > span:not(.swatch){
+    min-width:0;
+    overflow-wrap:break-word;
+  }
+  .swatch{ width:11px;height:11px;border-radius:3px; display:inline-block; flex-shrink:0; }
+
+  /* ===== FILTERS (desktop: inline row · mobile: bottom sheet, see media query) ===== */
+  .filters{
+    display:flex; gap:14px; margin-bottom:24px; flex-wrap:wrap;
+  }
+  .filter-group{ display:flex; flex-direction:column; gap:7px; }
+  .filter-group label{
+    font-weight:700; font-size:0.78rem;
+    text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--ink-soft);
+    display:flex; align-items:center; gap:6px;
+  }
+  select{
+    padding:11px 14px;
+    border:2px solid var(--line);
+    border-radius:10px;
+    font-size:16px; /* 16px avoids iOS Safari zoom-on-focus */
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-width:190px;
+    min-height:46px;
+    transition:border-color .15s ease;
+  }
+  select:focus{ border-color:var(--teal); }
+
+  .filter-trigger{
+    display:none; /* shown only on mobile */
+    align-items:center; gap:8px;
+    background:var(--paper-2);
+    border:2px solid var(--line);
+    color:var(--ink);
+    font-weight:700; font-size:0.86rem;
+    padding:10px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    white-space:nowrap;
+    min-height:44px;
+  }
+  .filter-trigger .badge{
+    background:var(--teal); color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:800;
+    border-radius:999px; padding:1px 7px; min-width:18px; text-align:center;
+  }
+
+  .sheet-backdrop{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(18,34,43,0.45);
+    z-index:60;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+  .sheet-backdrop.open{ display:block; opacity:1; }
+
+  .sheet-footer{
+    display:none;
+  }
+
+  /* ===== RESULTS TABLE (desktop) ===== */
+  .results-table{ overflow-x:auto; }
+  table{ width:100%; border-collapse:collapse; }
+  th{
+    text-align:left; padding:12px 14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--ink-soft);
+    border-bottom:2px solid var(--line);
+  }
+  td{ padding:14px; border-bottom:1px solid var(--line); font-size:0.94rem; }
+  tbody tr{ position:relative; transition:background .15s ease; }
+  tbody tr:hover{ background:var(--paper-2); }
+  tbody tr td:first-child{ position:relative; padding-left:22px; }
+  tbody tr td:first-child::before{
+    content:""; position:absolute; left:0; top:6px; bottom:6px; width:4px; border-radius:3px;
+  }
+  tr[data-house="Ganga"] td:first-child::before{ background:var(--ganga); }
+  tr[data-house="Yamuna"] td:first-child::before{ background:var(--yamuna); }
+  tr[data-house="Kaveri"] td:first-child::before{ background:var(--kaveri); }
+  tr[data-house="Krishna"] td:first-child::before{ background:var(--krishna); }
+
+  .medal{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:50%;
+    font-family:'JetBrains Mono',monospace; font-weight:800; font-size:0.85rem;
+    color:#fff;
+    flex-shrink:0;
+  }
+  .medal.p1{ background:linear-gradient(145deg,#F3C94D,#D6971A); box-shadow:0 3px 8px rgba(214,151,26,0.5);}
+  .medal.p2{ background:linear-gradient(145deg,#CFCFCF,#9AA0A6); box-shadow:0 3px 8px rgba(154,160,166,0.5);}
+  .medal.p3{ background:linear-gradient(145deg,#D79A6B,#B5722F); box-shadow:0 3px 8px rgba(181,114,47,0.5);}
+  .medal.plain{ background:var(--ink-soft); }
+
+  .house-tag{ display:inline-flex; align-items:center; gap:7px; font-weight:700; }
+
+  .empty-state{
+    text-align:center; padding:50px 20px; color:var(--ink-soft);
+  }
+  .empty-state .big{ font-size:2rem; margin-bottom:10px; }
+
+  /* mobile result cards */
+  .result-cards{ display:none; flex-direction:column; gap:12px; }
+  .result-card{
+    border:1px solid var(--line); border-radius:14px; padding:16px;
+    position:relative; overflow:hidden; background:var(--paper);
+  }
+  .result-card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:5px;
+  }
+  .result-card[data-house="Ganga"]::before{ background:var(--ganga); }
+  .result-card[data-house="Yamuna"]::before{ background:var(--yamuna); }
+  .result-card[data-house="Kaveri"]::before{ background:var(--kaveri); }
+  .result-card[data-house="Krishna"]::before{ background:var(--krishna); }
+  .result-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-top:6px;}
+  .result-card-event{ font-weight:800; font-size:1.02rem; }
+  .result-card-meta{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px 16px; font-size:0.85rem; color:var(--ink-soft); }
+  .result-card-meta b{ color:var(--ink); }
+
+  /* ===== CATEGORIES ===== */
+  .category-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+    gap:18px;
+  }
+  .category-card{
+    border-radius:16px; padding:24px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .category-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+  .category-title{ font-family:'Fraunces',serif; font-weight:640; font-size:1.25rem; }
+  .category-classes{ font-size:0.82rem; color:var(--ink-soft); margin-bottom:16px; }
+  .mini-bars{ display:flex; align-items:flex-end; gap:8px; height:70px; margin-bottom:16px; }
+  .mini-bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+  .mini-bar{ width:100%; border-radius:5px 5px 0 0; transition:height .8s cubic-bezier(.22,.9,.3,1); min-height:3px; }
+  .mini-bar-label{ font-size:0.62rem; margin-top:5px; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; }
+  .leading-house{
+    padding:10px 14px; border-radius:10px; font-weight:800; font-size:0.9rem;
+    display:flex; align-items:center; gap:8px;
+    background:#fff; border:1px solid var(--line);
+  }
+
+  /* ===== CHARTS ===== */
+  .chart-toggle{ display:flex; gap:8px; margin-bottom:18px; }
+  .toggle-btn{
+    padding:8px 16px; border-radius:999px; border:2px solid var(--line);
+    background:#fff; font-weight:700; font-size:0.82rem; cursor:pointer; color:var(--ink-soft);
+    transition:all .15s ease;
+    min-height:40px;
+  }
+  .toggle-btn.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .chart-container{ position:relative; height:420px; margin-top:10px; }
+
+  .loading-text{ text-align:center; padding:40px; color:var(--ink-soft); font-style:italic; }
+
+  footer{
+    text-align:center; padding:24px; color:var(--ink-soft);
+    font-size:0.85rem; font-style:italic; margin-top:20px;
+  }
+
+  /* ===== BOTTOM TAB BAR (mobile only) ===== */
+  .bottom-nav{
+    display:none;
+  }
+
+  /* =========================================================
+     MOBILE / PORTRAIT LAYOUT — everything below re-flows the
+     app into a single-column, thumb-driven experience.
+     ========================================================= */
+  @media (max-width:680px){
+
+    body{ padding-bottom:calc(72px + var(--sab)); }
+
+    .container{ padding:16px 14px 24px; }
+
+    /* --- Header: compact --- */
+    .header{
+      padding:calc(20px + var(--sat)) 18px 22px;
+      border-radius:16px;
+      margin-bottom:14px;
+      text-align:left;
+    }
+    .eyebrow{ font-size:0.66rem; margin-bottom:8px; }
+    .header h1{ font-size:2.1rem; margin-bottom:8px; }
+    .header .tagline{ font-size:0.88rem; }
+    .status-row{
+      justify-content:flex-start;
+      margin-top:16px;
+      gap:8px;
+    }
+    .live-pill{ font-size:0.72rem; padding:6px 12px 6px 9px; }
+    .last-updated{ display:none; } /* redundant with pill on small screens */
+    .refresh-btn{
+      width:38px; height:38px; padding:0;
+      border-radius:50%;
+      font-size:1rem;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .refresh-btn .refresh-label{ display:none; }
+
+    /* --- Top tabs hidden, bottom bar takes over --- */
+    .nav-tabs{ display:none; }
+
+    .bottom-nav{
+      display:flex;
+      position:fixed;
+      left:0; right:0; bottom:0;
+      z-index:50;
+      background:#fff;
+      border-top:1px solid var(--line);
+      box-shadow:0 -8px 24px rgba(18,34,43,0.12);
+      padding:6px 6px calc(6px + var(--sab));
+      justify-content:space-around;
+    }
+    .bottom-tab{
+      flex:1;
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+      background:none; border:none;
+      padding:8px 4px;
+      min-height:52px;
+      color:var(--ink-soft);
+      font-family:'Inter',sans-serif;
+      font-weight:700;
+      font-size:0.66rem;
+      border-radius:12px;
+      cursor:pointer;
+      transition:background .15s ease, color .15s ease;
+    }
+    .bottom-tab .icon{ font-size:1.25rem; line-height:1; }
+    .bottom-tab.active{ color:var(--teal-deep); background:var(--paper-2); }
+
+    .card{ padding:18px; border-radius:14px; margin-bottom:14px; }
+    .card-head{ flex-direction:column; align-items:stretch; gap:10px; }
+    .card h2{ font-size:1.32rem; }
+    .card .sub{ font-size:0.84rem; }
+
+    /* --- Leaderboard: stack points under name --- */
+    .river-row{ padding:14px 16px; }
+    .river-content{ flex-wrap:wrap; }
+    .river-name{ font-size:1.02rem; gap:9px; }
+    .river-points{ font-size:1.12rem; padding:5px 12px; }
+    .leader-strip{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:9px; }
+    .leader-chip{ padding:10px 10px; }
+    .leader-chip .who{ font-size:0.92rem; }
+    .leader-chip{ padding:11px 12px; }
+
+    /* --- Filters become a bottom sheet, opened via trigger --- */
+    .filter-trigger{ display:inline-flex; }
+    .filters{
+      display:flex !important; /* override inline row */
+      flex-direction:column;
+      position:fixed;
+      left:0; right:0; bottom:0;
+      margin:0;
+      background:#fff;
+      border-radius:20px 20px 0 0;
+      padding:10px 20px calc(20px + var(--sab));
+      box-shadow:0 -12px 40px rgba(18,34,43,0.25);
+      z-index:70;
+      transform:translateY(105%);
+      transition:transform .28s cubic-bezier(.22,.9,.3,1);
+      max-height:75vh;
+      overflow-y:auto;
+      gap:16px;
+    }
+    .filters.open{ transform:translateY(0); }
+    .filters::before{
+      content:"";
+      display:block;
+      width:40px; height:4px; border-radius:999px;
+      background:var(--line);
+      margin:2px auto 6px;
+    }
+    .filter-group select{ width:100%; }
+    .sheet-footer{
+      display:flex; gap:10px; margin-top:4px;
+    }
+    .sheet-footer button{
+      flex:1;
+      min-height:46px;
+      border-radius:12px;
+      font-weight:800;
+      font-size:0.88rem;
+      cursor:pointer;
+      border:2px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+    }
+    .sheet-footer .apply-btn{
+      background:var(--ink); color:var(--paper); border-color:var(--ink);
+    }
+
+    /* --- Results: cards only, table hidden --- */
+    .results-table{ display:none; }
+    .result-cards{ display:flex; }
+
+    /* --- Categories: single column on narrow phones --- */
+    .category-grid{ grid-template-columns:1fr; gap:12px; }
+    .category-card{ padding:18px; }
+
+    /* --- Charts: shorter, toggle stays but tighter --- */
+    .chart-container{ height:270px; }
+    .toggle-btn{ flex:1; padding:9px 10px; font-size:0.78rem; }
+    .chart-toggle{ gap:6px; }
+
+    footer{ padding:16px 16px calc(16px + var(--sab)); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="eyebrow">⛲ House Championship · Live</div>
+    <h1>Sameeksha 2026</h1>
+    <p class="tagline">Four in houses. Every point counts.</p>
+    <div class="status-row">
+      <span class="live-pill"><span id="liveDot" class="live-dot loading"></span><span id="statusText">Connecting…</span></span>
+      <span class="last-updated">Last sync: <span id="lastUpdated">—</span></span>
+      <button class="refresh-btn" onclick="manualRefresh()" aria-label="Refresh now"><span class="refresh-label">↻ Refresh now</span><span aria-hidden="true">↻</span></button>
+    </div>
+  </div>
+
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-tab="home" onclick="showTab('home')">🏠 Home</button>
+    <button class="nav-tab" data-tab="results" onclick="showTab('results')">📋 Results</button>
+    <button class="nav-tab" data-tab="categories" onclick="showTab('categories')">🎯 Categories</button>
+    <button class="nav-tab" data-tab="charts" onclick="showTab('charts')">📈 Charts</button>
+  </nav>
+
+  <div id="home" class="tab-content active">
+    <div class="card">
+      <h2>House Leaderboard</h2>
+      <div style="height:14px;"></div>
+      <div id="leaderboard" class="leaderboard">
+        <div class="loading-text">Filling the rivers…</div>
+      </div>
+      <div id="leaderStrip" class="leader-strip"></div>
+    </div>
+  </div>
+
+  <div id="results" class="tab-content">
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Results Viewer</h2>
+          <div class="sub">Every event, every house — filter to find what you're looking for</div>
+        </div>
+        <button class="filter-trigger" onclick="openFilterSheet()">
+          🔍 Filter <span class="badge" id="filterBadge" style="display:none;">0</span>
+        </button>
+      </div>
+
+      <div class="filters" id="filterSheet">
+        <div class="filter-group">
+          <label for="categoryFilter">🎓 Category</label>
+          <select id="categoryFilter" onchange="filterResults()">
+            <option value="">All Categories</option>
+            <option value="cat1">Category 1 (Classes 1-2)</option>
+            <option value="cat2">Category 2 (Classes 3-4)</option>
+            <option value="cat3">Category 3 (Classes 5-7)</option>
+            <option value="cat4">Category 4 (Classes 8-10)</option>
+            <option value="cat5">Category 5 (Classes 11-12)</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="typeFilter">👥 Type</label>
+          <select id="typeFilter" onchange="filterResults()">
+            <option value="">All Types</option>
+            <option value="individual">Individual</option>
+            <option value="group">Group</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="eventFilter">🏁 Event</label>
+          <select id="eventFilter" onchange="filterResults()">
+            <option value="">All Events</option>
+          </select>
+        </div>
+        <div class="sheet-footer">
+          <button type="button" onclick="clearFilters()">Clear</button>
+          <button type="button" class="apply-btn" onclick="closeFilterSheet()">Show results</button>
+        </div>
+      </div>
+      <div class="sheet-backdrop" id="sheetBackdrop" onclick="closeFilterSheet()"></div>
+
+      <div class="results-table">
+        <table id="resultsTable">
+          <thead>
+            <tr><th>Event</th><th>Type</th><th>Student/Team</th><th>Class</th><th>House</th><th>Position</th></tr>
+          </thead>
+          <tbody id="resultsBody">
+            <tr><td colspan="6" class="loading-text">Loading results…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="resultCards" class="result-cards"></div>
+      <div id="emptyState" class="empty-state" style="display:none;">
+        <div class="big">🌾</div>
+        <div>No results match yet — try clearing a filter.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="categories" class="tab-content">
+    <div class="card">
+      <h2>Category Breakdown</h2>
+      <div class="sub">Which house is leading each class group, and by how much</div>
+      <div id="categoryBreakdown" class="category-grid">
+        <div class="loading-text">Loading category data…</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="charts" class="tab-content">
+    <div class="card">
+      <h2>Points Visualization</h2>
+      <div class="sub">Overall standings across all categories</div>
+      <div class="chart-toggle">
+        <button class="toggle-btn active" id="btnOverall" onclick="setChartMode('overall')">Overall</button>
+        <button class="toggle-btn" id="btnByCat" onclick="setChartMode('byCategory')">By Category</button>
+      </div>
+      <div class="chart-container"><canvas id="pointsChart"></canvas></div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="bottom-nav">
+  <button class="bottom-tab active" data-tab="home" onclick="showTab('home')"><span class="icon">🏠</span>Home</button>
+  <button class="bottom-tab" data-tab="results" onclick="showTab('results')"><span class="icon">📋</span>Results</button>
+  <button class="bottom-tab" data-tab="categories" onclick="showTab('categories')"><span class="icon">🎯</span>Categories</button>
+  <button class="bottom-tab" data-tab="charts" onclick="showTab('charts')"><span class="icon">📈</span>Charts</button>
+</nav>
+
+<footer>Made with 💖 Pranav</footer>
+
+<script>
+let allData = { individual:{cat1:[],cat2:[],cat3:[],cat4:[],cat5:[]}, group:{cat1:[],cat2:[],cat3:[],cat4:[],cat5:[]} };
+let allEvents = new Set();
+let currentFilters = { category:'', type:'', event:'' };
+let chartMode = 'overall';
+
+const houses = {
+  Ganga:  { color:'#E8952B', soft:'#FBE3BE', class:'ganga'  },
+  Yamuna: { color:'#2B6CB0', soft:'#CFE0F5', class:'yamuna' },
+  Kaveri: { color:'#1E8A5F', soft:'#CDEBDD', class:'kaveri' },
+  Krishna:{ color:'#C23B3B', soft:'#F5D3D3', class:'krishna'}
+};
+const categories = {
+  cat1:{name:'Category 1', classes:'Classes 1-2'},
+  cat2:{name:'Category 2', classes:'Classes 3-4'},
+  cat3:{name:'Category 3', classes:'Classes 5-7'},
+  cat4:{name:'Category 4', classes:'Classes 8-10'},
+  cat5:{name:'Category 5', classes:'Classes 11-12'}
+};
+
+function saveFilterState(){
+  currentFilters.category = document.getElementById('categoryFilter').value;
+  currentFilters.type = document.getElementById('typeFilter').value;
+  currentFilters.event = document.getElementById('eventFilter').value;
+  updateFilterBadge();
+}
+function restoreFilterState(){
+  document.getElementById('categoryFilter').value = currentFilters.category;
+  document.getElementById('typeFilter').value = currentFilters.type;
+  document.getElementById('eventFilter').value = currentFilters.event;
+  updateFilterBadge();
+}
+function updateFilterBadge(){
+  const count = [currentFilters.category, currentFilters.type, currentFilters.event].filter(Boolean).length;
+  const badge = document.getElementById('filterBadge');
+  if(!badge) return;
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'inline-block' : 'none';
+}
+function clearFilters(){
+  document.getElementById('categoryFilter').value = '';
+  document.getElementById('typeFilter').value = '';
+  document.getElementById('eventFilter').value = '';
+  filterResults();
+}
+
+/* ---- mobile filter sheet ---- */
+function openFilterSheet(){
+  document.getElementById('filterSheet').classList.add('open');
+  document.getElementById('sheetBackdrop').classList.add('open');
+}
+function closeFilterSheet(){
+  document.getElementById('filterSheet').classList.remove('open');
+  document.getElementById('sheetBackdrop').classList.remove('open');
+}
+
+/* ---- tab switching (drives both top tabs and bottom tab bar) ---- */
+function showTab(tabName){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab, .bottom-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  document.querySelectorAll(`[data-tab="${tabName}"]`).forEach(b=>b.classList.add('active'));
+  if(tabName === 'charts') setTimeout(updateChart, 100);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function loadCSV(filename){
+  try{
+    const cacheBuster = `${new Date().getTime()}_${Math.random().toString(36).substr(2,9)}`;
+    const url = `${filename}?v=${cacheBuster}`;
+    const response = await fetch(url, {
+      method:'GET', cache:'no-cache',
+      headers:{'Cache-Control':'no-cache, no-store, must-revalidate','Pragma':'no-cache','Expires':'0'}
+    });
+    if(!response.ok) return [];
+    const csvText = await response.text();
+    if(!csvText.trim()) return [];
+    const result = Papa.parse(csvText, { header:true, skipEmptyLines:true, dynamicTyping:false, delimitersToGuess:[',','\t','|',';'] });
+    if(result.data.length > 0){
+      const cleaned = result.data.map(row=>{
+        const c = {};
+        Object.keys(row).forEach(k=>{ c[k.trim()] = row[k] ? row[k].toString().trim() : ''; });
+        return {
+          event_name: c.event_name || c.Event || c.event || '',
+          name: c.student_name || c.name || c.Name || c.Student || '',
+          team_name: c.team_name || c.Team || c.team || '',
+          class: c.class_num || c.class || c.Class || c.grade || '',
+          house: c.house || c.House || '',
+          position: c.position || c.Position || c.rank || ''
+        };
+      });
+      return cleaned.filter(r=>Object.values(r).some(v=>v!==''));
+    }
+    return [];
+  }catch(e){ console.error(`Error loading ${filename}:`, e); return []; }
+}
+
+function updateStatus(status, message){
+  const dot = document.getElementById('liveDot');
+  const text = document.getElementById('statusText');
+  const lastUpdated = document.getElementById('lastUpdated');
+  dot.className = status === 'loading' ? 'live-dot loading' : 'live-dot';
+  text.textContent = message;
+  if(status === 'updated') lastUpdated.textContent = new Date().toLocaleTimeString();
+}
+
+function manualRefresh(){ saveFilterState(); loadAllData(); }
+
+function updateEventDropdown(){
+  const eventFilter = document.getElementById('eventFilter');
+  const saved = currentFilters.event;
+  eventFilter.innerHTML = '<option value="">All Events</option>';
+  Array.from(allEvents).sort().forEach(ev=>{
+    if(ev && ev.trim()!==''){
+      const opt = document.createElement('option');
+      opt.value = ev; opt.textContent = ev;
+      eventFilter.appendChild(opt);
+    }
+  });
+  if(saved && allEvents.has(saved)){ eventFilter.value = saved; currentFilters.event = saved; }
+  else if(saved && !allEvents.has(saved)){ currentFilters.event = ''; }
+}
+
+async function loadAllData(){
+  updateStatus('loading', 'Syncing…');
+  saveFilterState();
+  document.querySelectorAll('.loading-text').forEach(el=>el.textContent = 'Loading…');
+  allEvents.clear();
+  try{
+    let total = 0;
+    for(let i=1;i<=5;i++){
+      const catKey = `cat${i}`;
+      const individualData = await loadCSV(`${catKey}_individual.csv`);
+      const groupData = await loadCSV(`${catKey}_group.csv`);
+      allData.individual[catKey] = individualData;
+      allData.group[catKey] = groupData;
+      total += individualData.length + groupData.length;
+      individualData.forEach(r=>{ if(r.event_name.trim()) allEvents.add(r.event_name.trim()); });
+      groupData.forEach(r=>{ if(r.event_name.trim()) allEvents.add(r.event_name.trim()); });
+    }
+    updateEventDropdown();
+    updateLeaderboard();
+    updateResults();
+    updateCategoryBreakdown();
+    updateChart();
+    restoreFilterState();
+    filterResults();
+    updateStatus('updated', `Live · ${total} records`);
+  }catch(e){
+    console.error('Error loading data:', e);
+    updateStatus('loading', 'Connection issue');
+    document.querySelectorAll('.loading-text').forEach(el=>el.textContent = "Couldn't load data — check CSV files.");
+  }
+}
+
+function calculateHousePoints(catKey){
+  const pts = { Ganga:0, Yamuna:0, Kaveri:0, Krishna:0 };
+  const source = catKey ? { [catKey]: allData.individual[catKey] } : allData.individual;
+  Object.keys(source).forEach(cat=>{
+    source[cat].forEach(r=>{
+      const h = r.house, p = parseInt(r.position);
+      if(h && pts.hasOwnProperty(h) && p){
+        if(p===1) pts[h]+=5; else if(p===2) pts[h]+=3; else if(p===3) pts[h]+=1;
+      }
+    });
+  });
+  return pts;
+}
+
+function animateCount(el, to){
+  const from = parseInt(el.dataset.val || '0');
+  const dur = 450, start = performance.now();
+  function step(t){
+    const p = Math.min((t-start)/dur, 1);
+    const eased = 1 - Math.pow(1-p, 3);
+    const val = Math.round(from + (to-from)*eased);
+    el.textContent = `${val} pts`;
+    if(p<1) requestAnimationFrame(step); else el.dataset.val = to;
+  }
+  requestAnimationFrame(step);
+}
+
+function updateLeaderboard(){
+  const points = calculateHousePoints();
+  const max = Math.max(1, ...Object.values(points));
+  const sorted = Object.entries(points).sort(([,a],[,b])=>b-a);
+  const board = document.getElementById('leaderboard');
+  board.innerHTML = sorted.map(([house, pts], i)=>{
+    const isLeading = i===0 && pts>0;
+    const widthPct = Math.max(6, (pts/max)*100);
+    return `
+      <div class="river-row ${houses[house].class} ${isLeading?'leading':''}">
+        <div class="river-fill" style="width:${widthPct}%"></div>
+        <div class="river-content">
+          <div class="river-name">
+            <span class="rank-badge">${i+1}</span>
+            ${house}${isLeading?'<span class="crown">👑</span>':''}
+          </div>
+          <span class="river-points" data-val="0">0 pts</span>
+        </div>
+      </div>`;
+  }).join('');
+  sorted.forEach(([house, pts], i)=>{
+    const el = board.children[i].querySelector('.river-points');
+    setTimeout(()=>animateCount(el, pts), 60);
+  });
+
+  const strip = document.getElementById('leaderStrip');
+  strip.innerHTML = Object.keys(categories).map(catKey=>{
+    const catPts = calculateHousePoints(catKey);
+    const leader = Object.entries(catPts).sort(([,a],[,b])=>b-a)[0];
+    return `
+      <div class="leader-chip">
+        <div class="cat">${categories[catKey].name} · ${categories[catKey].classes}</div>
+        <div class="who"><span class="swatch" style="background:${houses[leader[0]].color}"></span>${leader[0]} <span style="color:var(--ink-soft); font-weight:600; font-family:'JetBrains Mono',monospace;">${leader[1]}pt</span></div>
+      </div>`;
+  }).join('');
+}
+
+function updateResults(){
+  const allResults = [];
+  Object.keys(allData.individual).forEach(cat=>{
+    allData.individual[cat].forEach(r=>allResults.push({
+      category:categories[cat].name, type:'Individual', event:r.event_name||'N/A',
+      name:r.name||'N/A', class:r.class||'N/A', house:r.house||'N/A', position:r.position||'N/A'
+    }));
+    allData.group[cat].forEach(r=>allResults.push({
+      category:categories[cat].name, type:'Group', event:r.event_name||'N/A',
+      name:r.team_name||r.name||'N/A', class:r.class||'N/A', house:r.house||'N/A', position:r.position||'N/A'
+    }));
+  });
+
+  const medalClass = pos => pos==='1'?'p1':pos==='2'?'p2':pos==='3'?'p3':'plain';
+
+  document.getElementById('resultsBody').innerHTML = allResults.map(r=>`
+    <tr data-category="${r.category.toLowerCase()}" data-house="${r.house}" data-type="${r.type.toLowerCase()}" data-event="${r.event}">
+      <td>${r.event}</td>
+      <td>${r.type}</td>
+      <td>${r.name}</td>
+      <td>${r.class}</td>
+      <td><span class="house-tag"><span class="swatch" style="background:${houses[r.house]?.color||'#999'}"></span>${r.house}</span></td>
+      <td>${r.position!=='N/A' && !isNaN(parseInt(r.position)) ? `<span class="medal ${medalClass(r.position)}">${r.position}</span>` : r.position}</td>
+    </tr>`).join('');
+
+  document.getElementById('resultCards').innerHTML = allResults.map(r=>`
+    <div class="result-card" data-category="${r.category.toLowerCase()}" data-house="${r.house}" data-type="${r.type.toLowerCase()}" data-event="${r.event}">
+      <div class="result-card-top">
+        <div class="result-card-event">${r.event}</div>
+        ${r.position!=='N/A' && !isNaN(parseInt(r.position)) ? `<span class="medal ${medalClass(r.position)}">${r.position}</span>` : ''}
+      </div>
+      <div class="result-card-meta">
+        <span><b>${r.name}</b></span>
+        <span>${r.type}</span>
+        <span>Class ${r.class}</span>
+        <span class="house-tag"><span class="swatch" style="background:${houses[r.house]?.color||'#999'}"></span>${r.house}</span>
+      </div>
+    </div>`).join('');
+}
+
+function filterResults(){
+  saveFilterState();
+  const categoryFilter = document.getElementById('categoryFilter').value;
+  const typeFilter = document.getElementById('typeFilter').value;
+  const eventFilter = document.getElementById('eventFilter').value;
+  const catName = categoryFilter ? categories[categoryFilter].name.toLowerCase() : '';
+
+  let visibleCount = 0;
+  [...document.querySelectorAll('#resultsBody tr'), ...document.querySelectorAll('#resultCards .result-card')].forEach(el=>{
+    const rowCategory = el.getAttribute('data-category');
+    const type = (el.getAttribute('data-type')||'');
+    const event = el.getAttribute('data-event');
+    let show = true;
+    if(categoryFilter && rowCategory !== catName) show = false;
+    if(typeFilter && !type.includes(typeFilter)) show = false;
+    if(eventFilter && event !== eventFilter) show = false;
+    el.style.display = show ? '' : 'none';
+    if(show && el.tagName==='TR') visibleCount++;
+  });
+  // also count visible cards for the empty state (mobile has no <tr>s visible)
+  const visibleCards = document.querySelectorAll('#resultCards .result-card')
+    .length ? [...document.querySelectorAll('#resultCards .result-card')].filter(c=>c.style.display!=='none').length : 0;
+
+  document.getElementById('emptyState').style.display = (visibleCount===0 && visibleCards===0) ? 'block' : 'none';
+}
+
+function updateCategoryBreakdown(){
+  const breakdown = document.getElementById('categoryBreakdown');
+  const data = Object.keys(categories).map(catKey=>{
+    const pts = calculateHousePoints(catKey);
+    const leader = Object.entries(pts).sort(([,a],[,b])=>b-a)[0];
+    const max = Math.max(1, ...Object.values(pts));
+    return { catKey, name:categories[catKey].name, classes:categories[catKey].classes, pts, leader, max };
+  });
+  breakdown.innerHTML = data.map(cat=>`
+    <div class="category-card">
+      <div class="category-title">${cat.name}</div>
+      <div class="category-classes">${cat.classes}</div>
+      <div class="mini-bars">
+        ${Object.entries(cat.pts).map(([h,p])=>`
+          <div class="mini-bar-col">
+            <div class="mini-bar" style="height:${Math.max(4,(p/cat.max)*100)}%; background:${houses[h].color};"></div>
+            <div class="mini-bar-label">${h.slice(0,3)}</div>
+          </div>`).join('')}
+      </div>
+      <div class="leading-house"><span class="swatch" style="background:${houses[cat.leader[0]].color}"></span>${cat.leader[0]} leading · ${cat.leader[1]}pt</div>
+    </div>`).join('');
+}
+
+function setChartMode(mode){
+  chartMode = mode;
+  document.getElementById('btnOverall').classList.toggle('active', mode==='overall');
+  document.getElementById('btnByCat').classList.toggle('active', mode==='byCategory');
+  updateChart();
+}
+
+function updateChart(){
+  const ctx = document.getElementById('pointsChart');
+  if(!ctx) return;
+  if(window.pointsChart instanceof Chart) window.pointsChart.destroy();
+
+  if(chartMode === 'overall'){
+    const points = calculateHousePoints();
+    window.pointsChart = new Chart(ctx, {
+      type:'bar',
+      data:{
+        labels:Object.keys(points),
+        datasets:[{
+          label:'Points', data:Object.values(points),
+          backgroundColor:Object.keys(points).map(h=>houses[h].color),
+          borderRadius:8, borderSkipped:false
+        }]
+      },
+      options: baseChartOptions('Overall Standings')
+    });
+  } else {
+    const catKeys = Object.keys(categories);
+    const datasets = Object.keys(houses).map(h=>({
+      label:h,
+      data:catKeys.map(ck=>calculateHousePoints(ck)[h]),
+      backgroundColor:houses[h].color,
+      borderRadius:6, borderSkipped:false
+    }));
+    window.pointsChart = new Chart(ctx, {
+      type:'bar',
+      data:{ labels:catKeys.map(ck=>categories[ck].name), datasets },
+      options:{ ...baseChartOptions('Points by Category'), scales:{
+        x:{ stacked:true, grid:{display:false}, ticks:{color:'#12222B', font:{family:'Inter'}} },
+        y:{ stacked:true, beginAtZero:true, ticks:{color:'#425461', font:{family:'JetBrains Mono'}}, grid:{color:'#E4D9C2'} }
+      }}
+    });
+  }
+}
+
+function baseChartOptions(title){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ display:false },
+      title:{ display:true, text:title, color:'#12222B', font:{ family:'Fraunces', size:18, weight:'600' }, padding:{bottom:18} }
+    },
+    scales:{
+      x:{ grid:{display:false}, ticks:{color:'#12222B', font:{family:'Inter', weight:'600'}} },
+      y:{ beginAtZero:true, ticks:{color:'#425461', font:{family:'JetBrains Mono'}, stepSize:1}, grid:{color:'#E4D9C2'} }
+    },
+    animation:{ duration:900, easing:'easeInOutQuart' }
+  };
+}
+
+setInterval(loadAllData, 30000);
+document.addEventListener('DOMContentLoaded', loadAllData);
+</script>
+</body>
+</html>
